@@ -296,7 +296,11 @@ public class GenerationController {
 
 			@RequestParam(value="filterDescription", defaultValue="false") boolean filterDescription,
 			@RequestParam(value="Browsing", required=false, defaultValue = "TEMPLATE") BrowsingSuggest browsingSuggest,
-			@RequestParam(value="Pagination",required = false, defaultValue = "NONE" ) Pagination pagination
+			@RequestParam(value="Pagination",required = false, defaultValue = "NONE" ) Pagination pagination,
+			@RequestParam(value="Tooltip", required = false, defaultValue="true") boolean tooltip,
+			@RequestParam(value="Control", required = false, defaultValue="true") boolean control,
+			@RequestParam(value="VariablesDrapeaux", required = false, defaultValue="false") boolean variablesDrapeaux,
+			@RequestParam(value="Declaration", required = false, defaultValue="true") boolean declaration
 			) throws Exception {
 
 		File enoInput = File.createTempFile("eno", ".xml");
@@ -328,7 +332,10 @@ public class GenerationController {
 		if(lunaticXMLParameters!=null) {
 			lunaticXMLParameters.setFilterDescription(filterDescription);
 			lunaticXMLParameters.setPagination(pagination);
-		}
+			lunaticXMLParameters.setControl(control);	
+			lunaticXMLParameters.setDeclaration(declaration);
+			lunaticXMLParameters.setToolTip(tooltip);
+			lunaticXMLParameters.setVariablesDrapeaux(variablesDrapeaux);}
 		InputStream specificTreatmentIS = specificTreatment!=null ? specificTreatment.getInputStream():null;
 
 		File enoTemp = parametrizedGenerationService.generateQuestionnaire(enoInput, enoParameters, null, specificTreatmentIS, null);
