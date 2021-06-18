@@ -1,9 +1,9 @@
 package fr.insee.eno.ws.controller;
 
 import java.io.File;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 
-import fr.insee.eno.postprocessing.lunaticxml.LunaticXMLVTLParserPostprocessor;
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,6 +22,7 @@ import fr.insee.eno.parameters.Pipeline;
 import fr.insee.eno.parameters.PreProcessing;
 import fr.insee.eno.ws.service.TransformService;
 import fr.insee.eno.service.ParameterizedGenerationService;
+import fr.insee.eno.utils.Xpath2VTLParser;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
@@ -38,8 +39,6 @@ public class UtilController {
 	private static final Logger LOGGER = LoggerFactory.getLogger(UtilController.class);
 	
 	private ParameterizedGenerationService parameterizedGenerationService = new ParameterizedGenerationService();
-
-	private LunaticXMLVTLParserPostprocessor parser = new LunaticXMLVTLParserPostprocessor();
 
 	@Operation(summary = "Generation of ddi33 questionnaire from ddi32 questionnaire.", description = "It generates a ddi in 3.3 version questionnaire from a a ddi in 3.2 version questionnaire.")
 	@PostMapping(value = "ddi32-2-ddi33", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -75,10 +74,28 @@ public class UtilController {
 	public ResponseEntity<String> generateVTLFormula(
 			@RequestParam(value = "xpath", required = true) String xpath) throws Exception {
 
-		String vtl = parser.parseToVTL(xpath);
+		String vtl = Xpath2VTLParser.parseToVTL(xpath);
 		LOGGER.info("Xpath parse to" + vtl);
 		return ResponseEntity.ok()
 				.body(vtl);
+	}
+	
+	@Operation(summary = "Parsing Xpath2VTL in indicated nodes into XML files", description = "Into the XML files : it generates a VTL in 2.0 version from a Xpath in 1.1 version.")
+	@PostMapping(value = "xpath-2-vtl/file")
+	public ResponseEntity<StreamingResponseBody> parseVTLfile(
+			@RequestPart(value="in",required=true) MultipartFile in,
+			@RequestParam(value = "nodes", required = true) String nodes)throws Exception {
+		
+		File tmp = File.createTempFile("xpath2vtl", "xml", null);
+		FileUtils.copyInputStreamToFile(in.getInputStream(), tmp);
+
+		String inputString = FileUtils.readFileToString(tmp, StandardCharsets.UTF_8);
+
+		FileUtils.writeStringToFile(tmp, Xpath2VTLParser.parseToVTLInNodes(inputString, nodes), StandardCharsets.UTF_8);
+
+		LOGGER.info("Nodes : " + nodes);
+		
+		return ResponseUtil.generateResponseFromFile(tmp);
 	}
 	
 	@Operation(summary = "Generation of Lunatic Json from Lunatic XML", description = "It generates a Lunatic Json from a Lunatic XML, using the Lunatic-Model library.")
