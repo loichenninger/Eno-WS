@@ -81,7 +81,7 @@ public class UtilController {
 	}
 	
 	@Operation(summary = "Parsing Xpath2VTL in indicated nodes into XML files", description = "Into the XML files : it generates a VTL in 2.0 version from a Xpath in 1.1 version.")
-	@PostMapping(value = "xpath-2-vtl/file")
+	@PostMapping(value = "xpath-2-vtl/file", produces=MediaType.APPLICATION_OCTET_STREAM_VALUE, consumes= MediaType.MULTIPART_FORM_DATA_VALUE)
 	public ResponseEntity<StreamingResponseBody> parseVTLfile(
 			@RequestPart(value="in",required=true) MultipartFile in,
 			@RequestParam(value = "nodes", required = true) String nodes)throws Exception {
