@@ -284,7 +284,6 @@ public class GenerationController {
 			@RequestParam(value="IdentificationQuestion", required=false, defaultValue = "false") boolean IdentificationQuestion,
 			@RequestParam(value="ResponseTimeQuestion", required=false, defaultValue = "false") boolean EndQuestionResponseTime,
 			@RequestParam(value="CommentQuestion", required=false, defaultValue = "false") boolean EndQuestionCommentQuestion,
-			@RequestParam(value="parsingXpathVTL",required=false, defaultValue="true")  boolean parsingXpathVTL,
 			@RequestParam(value="filterDescription", defaultValue="false") boolean filterDescription,
 			@RequestParam(value="QuestNum") BrowsingEnum questNum,
 			@RequestParam(value="SeqNum") boolean seqNum,
@@ -297,13 +296,6 @@ public class GenerationController {
 
 		ENOParameters enoParameters = parameterService.getDefaultCustomParameters(Context.DEFAULT,OutFormat.LUNATIC_XML);
 		
-		//If input files contains VTL language control --> it's not necessary to parse xpath into vtl (post-processing)
-		if(!parsingXpathVTL) {
-		Pipeline pipeline = enoParameters.getPipeline();
-		pipeline.getPostProcessing().remove(PostProcessing.LUNATIC_XML_VTL_PARSER);
-		enoParameters.setPipeline(pipeline);
-		}
-	
 		Parameters parameters = enoParameters.getParameters();
 		parameters.setContext(context);
 		
