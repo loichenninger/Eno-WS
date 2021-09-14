@@ -1,5 +1,6 @@
 # Eno-WS : Questionnaire Generator REST Web Service
 
+[![Eno CI](https://github.com/InseeFr/Eno/actions/workflows/build-release.yml/badge.svg)](https://github.com/InseeFr/Eno-WS/actions/workflows/build-release.yml)
 
 ## Introduction
 
